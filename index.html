@@ -89,7 +89,8 @@ canvas#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
   display:flex;align-items:center;justify-content:center;
   font-size:3rem;
 }
-.photo-wrap img{width:100%;height:100%;object-fit:cover}
+.photo-wrap img{width:100%;height:100%;object-fit:cover;object-position:center}
+#p2 img{object-position:center top}
 .photo-caption{font-family:'Dancing Script',cursive;color:#c4587a;font-size:.9rem;text-align:center;width:100%}
 .page-dots{display:flex;gap:5px;justify-content:center}
 .dot{width:7px;height:7px;border-radius:50%;background:rgba(200,80,120,.2)}
@@ -125,7 +126,9 @@ canvas#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
 }
 .heart-photo:hover{box-shadow:0 0 22px var(--neon),0 0 50px rgba(255,45,120,.7)}
 .heart-photo img{width:100%;height:100%;object-fit:cover}
-@keyframes floatPhoto{0%,100%{transform:translateY(0) rotate(var(--rot))}50%{transform:translateY(-7px) rotate(var(--rot))}}
+@keyframes floatPhoto{0%,100%{transform:translateY(0) rotate(var(--rot)) scale(1)}50%{transform:translateY(-8px) rotate(var(--rot)) scale(1.05)}}
+@keyframes spinIn{from{opacity:0;transform:rotate(-360deg) scale(0)}to{opacity:1;transform:rotate(0) scale(1)}}
+@keyframes gentlePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
 </style>
 </head>
 <body>
@@ -139,7 +142,7 @@ canvas#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
   <div id="scene-qr">
     <p class="qr-label">✨ Escanéame ✨</p>
     <div class="qr-frame">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=https://tu-usuario.github.io/anita-birthday&color=ff2d78&bgcolor=ffffff" alt="QR"/>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=https://eliel0730.github.io/feliz-dia/&color=ff2d78&bgcolor=ffffff" alt="QR"/>
     </div>
     <div class="wa-bubble">
       <div class="wa-header">
@@ -349,35 +352,32 @@ function buildHeart(){
   const grid=document.getElementById('heart-grid');
   Array.from(grid.querySelectorAll('.heart-photo')).forEach(e=>e.remove());
 
-  // 13 photos on the OUTLINE of a heart — center is empty
+  // 13 photos in a beautiful CIRCULAR ALBUM layout ♡
   // Positions: [left%, top%, width%, height%, rotation_deg]
-  // Replicates exactly the reference image layout
+  // Perfect circle distribution with elegant floating animations
   const outline=[
-    // TOP LEFT BUMP
-    [5,  10, 24, 28, -20],
-    [20,  2, 26, 30,  -8],
-    [38,  8, 24, 28,   5],
-    // TOP RIGHT BUMP
-    [50,  4, 24, 28,  -5],
-    [65,  2, 26, 30,  10],
-    [75, 10, 24, 28,  20],
-    // LEFT SIDE
-    [2,  38, 24, 28, -15],
-    [5,  60, 24, 28, -10],
-    // RIGHT SIDE
-    [74, 38, 24, 28,  15],
-    [71, 60, 24, 28,  10],
-    // BOTTOM POINT
-    [22, 72, 26, 28,  -8],
-    [66, 68, 24, 26,  10],
-    [50, 75, 26, 30,   0],
+    [77, 37, 22, 27,   0],    // Top center
+    [73, 54, 22, 27,  28],    // Upper right
+    [60, 68, 22, 27,  55],    // Right upper
+    [44, 74, 22, 27,  83],    // Right middle
+    [25, 72, 22, 27, 111],    // Lower right
+    [11, 62, 22, 27, 138],    // Left lower
+    [2,  46, 22, 27, 166],    // Bottom left
+    [2,  27, 22, 27, 194],    // Left upper
+    [11, 11, 22, 27, 222],    // Upper left
+    [25,  1, 22, 27, 249],    // Top left
+    [43,  0, 22, 27, 277],    // Top center-left
+    [60,  5, 22, 27, 305],    // Top center-right
+    [73, 19, 22, 27, 332],    // Top right
   ];
 
   outline.forEach(([l,t,w,h,rot],i)=>{
     const div=document.createElement('div');
     div.className='heart-photo';
     const src=photoSrcs[i % photoSrcs.length];
-    div.style.cssText=`left:${l}%;top:${t}%;width:${w}%;height:${h}%;--rot:${rot}deg;transform:rotate(${rot}deg);animation-duration:${2+Math.random()*2}s;animation-delay:${i*0.1}s;z-index:${i}`;
+    const delayMs=i*45; // staggered entry animation
+    const floatDur=2.2+Math.random()*1.8;
+    div.style.cssText=`left:${l}%;top:${t}%;width:${w}%;height:${h}%;--rot:${rot}deg;animation:spinIn 0.8s ${delayMs}ms cubic-bezier(0.34,1.56,0.64,1) forwards,floatPhoto ${floatDur}s ${delayMs}ms ease-in-out infinite;z-index:${i}`;
     if(src){
       const img=document.createElement('img');img.src=src;div.appendChild(img);
     } else {
